@@ -1,0 +1,82 @@
+################################################################################
+# PRODUCTION ENVIRONMENT CONFIGURATION
+# Maximum availability, reliability, and security
+# 
+# IMPORTANT: 
+# 1. Configure remote state backend (S3 or GCS) in main.tf
+# 2. Never use SPOT/preemptible instances in production
+# 3. Enable all security features
+# 4. Set up backup and disaster recovery
+################################################################################
+
+# Production: AWS EKS or GCP GKE (NOT VPS)
+target_provider = "aws"  # or "gcp"
+
+################################################################################
+# AWS Production Configuration
+################################################################################
+
+aws_region           = "us-east-1"
+aws_vpc_cidr         = "10.2.0.0/16"
+aws_availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
+aws_single_nat_gateway = false  # Multi-AZ for HA
+
+eks_cluster_version  = "1.28"
+eks_instance_types   = ["t3.large", "t3a.large"]  # Larger for production
+eks_capacity_type    = "ON_DEMAND"  # NEVER use SPOT in production
+eks_desired_size     = 3
+eks_min_size         = 3
+eks_max_size         = 10
+
+aws_route53_zone_arns = [
+  "arn:aws:route53:::hostedzone/ZXXXXXXXXXXXXX"
+]
+
+################################################################################
+# GCP Production Configuration
+################################################################################
+
+# gcp_project_id       = "colombian-supply-prod"
+# gcp_region           = "us-central1"
+# gke_cluster_version  = "1.28"
+# gke_regional_cluster = true  # Regional for HA (3 zones)
+# gke_machine_type     = "n1-standard-4"
+# gke_preemptible_nodes = false  # NEVER use preemptible in production
+# gke_enable_autoscaling = true
+# gke_min_node_count   = 3  # Per zone (9 total for regional)
+# gke_max_node_count   = 10
+# gke_enable_private_nodes    = true
+# gke_enable_private_endpoint = false  # Keep false for CI/CD access
+
+################################################################################
+# Platform Configuration
+################################################################################
+
+letsencrypt_email      = "devops@colombiansupply.com"
+cert_manager_use_dns01 = true  # DNS01 for wildcard certs
+
+# External DNS - REQUIRED for production
+enable_external_dns         = true
+external_dns_domain_filters = ["colombiansupply.com"]
+
+# Monitoring - REQUIRED for production
+enable_monitoring          = true
+prometheus_ingress_enabled = true
+prometheus_ingress_host    = "prometheus.colombiansupply.com"
+grafana_ingress_host       = "grafana.colombiansupply.com"
+
+################################################################################
+# Production Checklist
+################################################################################
+# Before going live:
+# ☐ Configure remote state backend
+# ☐ Set up state locking (DynamoDB or GCS)
+# ☐ Enable CloudTrail/Cloud Audit Logs
+# ☐ Configure backup solution (Velero)
+# ☐ Set up alerting (PagerDuty/OpsGenie)
+# ☐ Document runbooks
+# ☐ Test disaster recovery procedures
+# ☐ Enable GuardDuty/Security Command Center
+# ☐ Configure WAF/Cloud Armor
+# ☐ Review and test scaling policies
+

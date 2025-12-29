@@ -1,0 +1,23 @@
+args:
+  - --cert-dir=/tmp
+  - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+  - --kubelet-use-node-status-port
+  - --metric-resolution=15s
+%{ if provider_type == "vps-k3s" }
+  # k3s specific: skip TLS verification for kubelet
+  - --kubelet-insecure-tls
+%{ endif }
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi
+
+replicas: 2
+
+serviceMonitor:
+  enabled: true
+

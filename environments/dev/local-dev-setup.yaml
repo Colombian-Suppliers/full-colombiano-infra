@@ -1,0 +1,36 @@
+# Local Development Setup
+# Para usar con Docker Desktop o Minikube
+# kubectl apply -f local-dev-setup.yaml
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: platform
+  labels:
+    name: platform
+    environment: dev
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: apps
+  labels:
+    name: apps
+    environment: dev
+
+---
+# Nota: Instalar ingress-nginx con Helm para dev local:
+# helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+# helm install ingress-nginx ingress-nginx/ingress-nginx \
+#   -n platform \
+#   --set controller.service.type=LoadBalancer \
+#   --set controller.hostPort.enabled=false
+
+# Para cert-manager:
+# kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.3/cert-manager.yaml
+
+# Para metrics-server (si no viene con tu cluster):
+# kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+

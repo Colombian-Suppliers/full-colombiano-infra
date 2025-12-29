@@ -1,0 +1,63 @@
+################################################################################
+# EXAMPLE CONFIGURATION FOR DEV ENVIRONMENT
+# Copy this file to terraform.tfvars and customize
+################################################################################
+
+# Select infrastructure provider: "vps", "aws", or "gcp"
+target_provider = "vps"
+
+################################################################################
+# VPS Configuration (if target_provider = "vps")
+################################################################################
+
+vps_host             = "203.0.113.10"
+vps_user             = "root"
+ssh_private_key_path = "~/.ssh/id_rsa"
+k3s_version          = "v1.28.5+k3s1"
+vps_configure_firewall = true
+
+################################################################################
+# AWS Configuration (if target_provider = "aws")
+################################################################################
+
+# aws_region           = "us-east-1"
+# aws_vpc_cidr         = "10.0.0.0/16"
+# aws_single_nat_gateway = true  # Cost savings for dev
+# eks_cluster_version  = "1.28"
+# eks_instance_types   = ["t3.medium"]
+# eks_capacity_type    = "SPOT"  # 70% cheaper
+# eks_desired_size     = 2
+# eks_min_size         = 1
+# eks_max_size         = 4
+# aws_route53_zone_arns = ["arn:aws:route53:::hostedzone/Z1234567890ABC"]
+
+################################################################################
+# GCP Configuration (if target_provider = "gcp")
+################################################################################
+
+# gcp_project_id       = "colombian-supply-dev"
+# gcp_region           = "us-central1"
+# gke_cluster_version  = "1.28"
+# gke_regional_cluster = false  # Zonal for dev (cheaper)
+# gke_machine_type     = "e2-medium"
+# gke_preemptible_nodes = true  # 80% cheaper
+# gke_min_node_count   = 1
+# gke_max_node_count   = 3
+
+################################################################################
+# Platform Configuration (Common to all providers)
+################################################################################
+
+letsencrypt_email      = "devops@colombiansupply.com"
+cert_manager_use_dns01 = false  # HTTP01 is simpler for dev
+
+# Optional: external-dns for automatic DNS management
+enable_external_dns         = false
+external_dns_domain_filters = ["dev.colombiansupply.com"]
+
+# Optional: Monitoring stack (resource-intensive)
+enable_monitoring          = false
+prometheus_ingress_enabled = false
+# prometheus_ingress_host    = "prometheus.dev.colombiansupply.com"
+# grafana_ingress_host       = "grafana.dev.colombiansupply.com"
+

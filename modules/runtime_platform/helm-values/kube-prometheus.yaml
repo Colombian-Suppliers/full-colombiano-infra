@@ -1,0 +1,108 @@
+fullnameOverride: prometheus
+
+defaultRules:
+  create: true
+  rules:
+    alertmanager: true
+    etcd: false
+    configReloaders: true
+    general: true
+    k8s: true
+    kubeApiserver: true
+    kubeApiserverAvailability: true
+    kubeApiserverSlos: true
+    kubelet: true
+    kubeProxy: true
+    kubePrometheusGeneral: true
+    kubePrometheusNodeRecording: true
+    kubernetesApps: true
+    kubernetesResources: true
+    kubernetesStorage: true
+    kubernetesSystem: true
+    kubeScheduler: true
+    kubeStateMetrics: true
+    network: true
+    node: true
+    nodeExporterAlerting: true
+    nodeExporterRecording: true
+    prometheus: true
+    prometheusOperator: true
+
+alertmanager:
+  enabled: true
+  ingress:
+    enabled: false
+
+grafana:
+  enabled: true
+  adminPassword: "admin"  # CHANGE THIS IN PRODUCTION
+  
+  ingress:
+    enabled: ${ingress_enabled}
+    %{ if ingress_enabled }
+    ingressClassName: nginx
+    hosts:
+      - ${grafana_ingress_host}
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - ${grafana_ingress_host}
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    %{ endif }
+  
+  persistence:
+    enabled: true
+    size: 10Gi
+
+prometheus:
+  enabled: true
+  
+  ingress:
+    enabled: ${ingress_enabled}
+    %{ if ingress_enabled }
+    ingressClassName: nginx
+    hosts:
+      - ${prometheus_ingress_host}
+    tls:
+      - secretName: prometheus-tls
+        hosts:
+          - ${prometheus_ingress_host}
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    %{ endif }
+  
+  prometheusSpec:
+    retention: 15d
+    
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 50Gi
+    
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
+
+prometheusOperator:
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
+  enabled: true
+

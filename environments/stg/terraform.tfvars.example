@@ -1,0 +1,59 @@
+################################################################################
+# STAGING ENVIRONMENT CONFIGURATION
+# Higher availability and reliability than dev, but not production-level
+################################################################################
+
+# Recommended: AWS or GCP for staging
+target_provider = "aws"
+
+################################################################################
+# AWS Configuration (Recommended for Staging)
+################################################################################
+
+aws_region           = "us-east-1"
+aws_vpc_cidr         = "10.1.0.0/16"
+aws_availability_zones = ["us-east-1a", "us-east-1b"]
+aws_single_nat_gateway = false  # Multi-AZ HA
+
+eks_cluster_version  = "1.28"
+eks_instance_types   = ["t3.medium"]
+eks_capacity_type    = "ON_DEMAND"  # Reliable for staging
+eks_desired_size     = 2
+eks_min_size         = 2
+eks_max_size         = 6
+
+# Route53 zones for DNS automation
+aws_route53_zone_arns = [
+  "arn:aws:route53:::hostedzone/Z1234567890ABC"
+]
+
+################################################################################
+# GCP Configuration (Alternative for Staging)
+################################################################################
+
+# gcp_project_id       = "colombian-supply-stg"
+# gcp_region           = "us-central1"
+# gke_cluster_version  = "1.28"
+# gke_regional_cluster = false  # Zonal acceptable for staging
+# gke_machine_type     = "n1-standard-2"
+# gke_preemptible_nodes = false  # Standard nodes
+# gke_min_node_count   = 2
+# gke_max_node_count   = 6
+
+################################################################################
+# Platform Configuration
+################################################################################
+
+letsencrypt_email      = "devops@colombiansupply.com"
+cert_manager_use_dns01 = true  # DNS01 for wildcard certs
+
+# External DNS - automatic DNS management
+enable_external_dns         = true
+external_dns_domain_filters = ["stg.colombiansupply.com"]
+
+# Monitoring - recommended for staging
+enable_monitoring          = true
+prometheus_ingress_enabled = true
+prometheus_ingress_host    = "prometheus.stg.colombiansupply.com"
+grafana_ingress_host       = "grafana.stg.colombiansupply.com"
+

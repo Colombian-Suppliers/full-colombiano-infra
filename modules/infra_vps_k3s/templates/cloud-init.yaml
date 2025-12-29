@@ -1,0 +1,42 @@
+#cloud-config
+# Example cloud-init configuration for k3s installation
+# Use this if your VPS provider supports cloud-init
+# Otherwise, use the SSH provisioner approach in main.tf
+
+package_update: true
+package_upgrade: true
+
+packages:
+  - curl
+  - ufw
+
+write_files:
+  - path: /tmp/install-k3s.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.28.5+k3s1" sh -s - server \
+        --write-kubeconfig-mode 644 \
+        --disable traefik \
+        --disable servicelb \
+        --disable local-storage
+
+runcmd:
+  # Configure firewall
+  - ufw --force enable
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow 22/tcp
+  - ufw allow 80/tcp
+  - ufw allow 443/tcp
+  - ufw allow 6443/tcp
+  
+  # Install k3s
+  - /tmp/install-k3s.sh
+  
+  # Enable k3s service
+  - systemctl enable k3s
+  - systemctl start k3s
+
+final_message: "k3s installation complete after $UPTIME seconds"
+

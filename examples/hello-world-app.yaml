@@ -1,0 +1,128 @@
+# Example portable application that works on VPS/AWS/GCP
+# Deploy with: kubectl apply -f hello-world-app.yaml
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: demo
+  labels:
+    name: demo
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world
+  namespace: demo
+  labels:
+    app: hello-world
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hello-world
+  template:
+    metadata:
+      labels:
+        app: hello-world
+    spec:
+      containers:
+      - name: hello
+        image: nginxdemos/hello:latest
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world
+  namespace: demo
+  labels:
+    app: hello-world
+spec:
+  type: ClusterIP
+  selector:
+    app: hello-world
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hello-world
+  namespace: demo
+  annotations:
+    # Automatic TLS certificate from cert-manager
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+    
+    # Automatic DNS record creation (if external-dns enabled)
+    external-dns.alpha.kubernetes.io/hostname: hello.example.com
+    
+    # nginx-ingress specific annotations
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - hello.example.com
+    secretName: hello-world-tls
+  rules:
+  - host: hello.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: hello-world
+            port:
+              number: 80
+---
+# Optional: HorizontalPodAutoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hello-world
+  namespace: demo
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: hello-world
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+

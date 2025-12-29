@@ -1,0 +1,39 @@
+provider: ${provider}
+
+sources:
+  - service
+  - ingress
+
+policy: sync
+
+logLevel: info
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+%{ if provider_type == "aws-eks" }
+# AWS Route53 configuration
+# IRSA annotation handled via serviceAccount
+%{ endif }
+
+%{ if provider_type == "gcp-gke" }
+# GCP Cloud DNS configuration
+# Workload Identity annotation handled via serviceAccount
+%{ endif }
+
+%{ if provider_type == "vps-k3s" }
+# Cloudflare configuration (default for VPS)
+# Requires cloudflare-api-token secret
+env:
+  - name: CF_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-api-token
+        key: api-token
+%{ endif }
+

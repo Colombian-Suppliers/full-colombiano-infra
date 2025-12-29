@@ -1,0 +1,39 @@
+global:
+  leaderElection:
+    namespace: platform
+
+installCRDs: true
+
+replicaCount: 2
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi
+
+prometheus:
+  enabled: true
+  servicemonitor:
+    enabled: true
+
+%{ if provider_type == "aws-eks" }
+# AWS EKS specific - IRSA configuration handled via serviceAccount annotations
+securityContext:
+  fsGroup: 1001
+%{ endif }
+
+%{ if provider_type == "gcp-gke" }
+# GCP GKE specific - Workload Identity configuration handled via serviceAccount annotations
+securityContext:
+  fsGroup: 1001
+%{ endif }
+
+webhook:
+  replicaCount: 2
+
+cainjector:
+  replicaCount: 2
+
