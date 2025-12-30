@@ -47,7 +47,7 @@ provider "aws" {
 }
 
 provider "google" {
-  project = var.gcp_project_id
+  project = var.gcp_project_id != "" ? var.gcp_project_id : "dummy-project"
   region  = var.gcp_region
   
   # Only configure if target is GCP

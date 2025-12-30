@@ -314,10 +314,10 @@ resource "helm_release" "kube_prometheus" {
 
   values = [
     templatefile("${path.module}/helm-values/kube-prometheus.yaml", {
-      environment        = var.environment
-      ingress_enabled    = var.prometheus_ingress_enabled
-      ingress_host       = var.prometheus_ingress_host
-      grafana_ingress_host = var.grafana_ingress_host
+      environment              = var.environment
+      ingress_enabled          = var.prometheus_ingress_enabled
+      prometheus_ingress_host  = var.prometheus_ingress_host
+      grafana_ingress_host     = var.grafana_ingress_host
     })
   ]
 

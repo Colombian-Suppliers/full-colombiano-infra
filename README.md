@@ -6,6 +6,8 @@
 
 Infraestructura portable y agnóstica de proveedor para Colombian Supply, diseñada para maximizar la flexibilidad entre VPS (k3s), AWS (EKS) y GCP (GKE) manteniendo una capa de runtime común basada en Helm/Kubernetes.
 
+> 📚 **Documentation**: Detailed documentation has been moved to the [full-colombiano-docs](https://github.com/Colombian-Suppliers/full-colombiano-docs) repository. See the [Documentation Index](https://github.com/Colombian-Suppliers/full-colombiano-docs/blob/main/docs/DOCUMENTATION_INDEX.md) for all available documentation. Deployment guides, SSL setup, and CI/CD documentation are available in the `docs/06-devops-e-infraestructura/` directory.
+
 ## 🎯 Filosofía de Diseño
 
 Este repositorio implementa una **arquitectura de 2 capas**:
