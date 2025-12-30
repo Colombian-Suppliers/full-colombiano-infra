@@ -1,0 +1,30 @@
+---
+# Service sin selector para PostgreSQL externo (en el host)
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-external
+  namespace: stg-apps
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+---
+# Endpoint que apunta al PostgreSQL del host
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: postgres-external
+  namespace: stg-apps
+subsets:
+- addresses:
+  # Usar la IP del host donde está PostgreSQL
+  # En k3s, podemos usar la IP del nodo o localhost (127.0.0.1 desde el host)
+  # Pero desde los pods necesitamos la IP real del host
+  - ip: 72.60.171.142  # IP del VPS, ajustar si es diferente
+  ports:
+  - port: 5432
+    protocol: TCP
+

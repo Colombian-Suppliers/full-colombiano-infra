@@ -18,6 +18,8 @@ metadata:
     app: frontend
 spec:
   replicas: 2
+  progressDeadlineSeconds: 600
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       app: frontend
@@ -26,6 +28,8 @@ spec:
       labels:
         app: frontend
     spec:
+      imagePullSecrets:
+      - name: ghcr-secret
       containers:
       - name: nextjs
         image: ghcr.io/colombian-suppliers/full-colombiano-frontend:staging
@@ -43,20 +47,30 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
-        livenessProbe:
+        startupProbe:
           httpGet:
             path: /
             port: 3000
-          initialDelaySeconds: 30
+          initialDelaySeconds: 0
           periodSeconds: 10
           timeoutSeconds: 5
+          failureThreshold: 30
         readinessProbe:
           httpGet:
             path: /
             port: 3000
-          initialDelaySeconds: 10
+          initialDelaySeconds: 5
           periodSeconds: 5
           timeoutSeconds: 3
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
 ---
 apiVersion: v1
 kind: Service

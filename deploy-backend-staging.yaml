@@ -46,6 +46,8 @@ spec:
       labels:
         app: backend-api
     spec:
+      imagePullSecrets:
+      - name: ghcr-secret
       containers:
       - name: api
         image: ghcr.io/colombian-suppliers/full-colombiano-backend:staging

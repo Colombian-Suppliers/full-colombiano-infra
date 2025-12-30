@@ -21,7 +21,7 @@ type: Opaque
 stringData:
   POSTGRES_DB: "colombian_staging"
   POSTGRES_USER: "fullcolombiano"
-  POSTGRES_PASSWORD: "CHANGE_ME_GENERATE_WITH_openssl_rand_base64_32"
+  POSTGRES_PASSWORD: "fullcolombiano_staging_2024"
 ---
 apiVersion: apps/v1
 kind: Deployment
